@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 #-----------------------------------------------------------------------------
-# ex1_qwiic_adxl313.py
+# ex1_qwiic_adxl313_basic_readings.py
 #
 # Simple Example for the Qwiic ADXL313 Device
+# Read values of x/y/z axis of the ADXL313 (via I2C), print them to terminal.
+# This uses default configuration (1G range, full resolution, 100Hz datarate).
 #------------------------------------------------------------------------
 #
 # Written by  SparkFun Electronics, October 2020
@@ -46,7 +48,7 @@ import sys
 
 def runExample():
 
-	print("\nSparkFun Adxl313  Example 1\n")
+	print("\nSparkFun Adxl313  Example 1 - Basic Readings\n")
 	myAdxl = qwiic_adxl313.QwiicAdxl313()
 
 	if myAdxl.connected == False:

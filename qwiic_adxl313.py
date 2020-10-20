@@ -152,10 +152,10 @@ class QwiicAdxl313(object):
 	ADXL313_OVERRUN	= 0x00
 
  	#/********************** RANGE SETTINGS OPTIONS **********************/
-	ADXL313_RANGE_05_G = 1 # 0-0.5G
-	ADXL313_RANGE_1_G = 2 # 0-1G
-	ADXL313_RANGE_2_G = 3 # 0-2G
-	ADXL313_RANGE_4_G = 4 # 0-4G
+	ADXL313_RANGE_05_G = 0x00 # 0-0.5G
+	ADXL313_RANGE_1_G = 0x01 # 0-1G
+	ADXL313_RANGE_2_G = 0x02 # 0-2G
+	ADXL313_RANGE_4_G = 0x03 # 0-4G
 
  	#/********************** POWER_CTL BIT POSITION **********************/
 	ADXL313_I2C_DISABLE_BIT = 0x06
@@ -254,6 +254,19 @@ class QwiicAdxl313(object):
 		return True
 
 	# ----------------------------------
+	# standby()
+	#
+	# clears the measure bit, putting decive in standby mode, ready for configuration
+	def standby(self):
+		""" 
+			clears the measure bit, putting decive in standby mode, ready for configuration
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		return self.setRegisterBit(self.ADXL313_POWER_CTL, self.ADXL313_MEASURE_BIT, False)
+
+	# ----------------------------------
 	# measureModeOn()
 	#
 	# sets the measure bit, putting decive in measure mode, ready for reading data
@@ -345,3 +358,50 @@ class QwiicAdxl313(object):
 		if self.z > 32767:
 			self.z -= 65536			
 		return True    
+
+	# ----------------------------------
+	# getRange()
+	#
+	# Reads the current range setting on the device
+	def getRange(self):
+		""" 
+			Reads the current range setting on the device
+
+			:return: range setting of the device (from in DATA_FORMAT register)
+			:rtype: float
+		"""
+		_register = self._i2c.readByte(self.address, regAddress)
+		_range = (_register & 0b00000011)
+		range_val = 0.1 # float, so we can handle the 0.5 range value
+
+		# device datatype is SIGNED 16 bit int (twos compliment)
+		# python receives this as simply 16 bits of data and stores it in a 32 byte data type
+		# we need to modify each incoming data value to be more useful and allow negative values
+		if _range == self.ADXL313_RANGE_05_G:
+			range_val = 0.5
+		elif _range == self.ADXL313_RANGE_1_G:
+			range_val = 1.0
+		elif _range == self.ADXL313_RANGE_2_G:
+			range_val = 2.0
+		elif _range == self.ADXL313_RANGE_4_G:
+			range_val = 4.0		
+		return range_val
+
+	# ----------------------------------
+	# setRange()
+	#
+	# Sets the range setting on the device
+	def setRange(self, new_range):
+		""" 
+			Sets the range setting on the device
+
+			:param range: range value desired (ADXL313_RANGE_05_G, ADXL313_RANGE_1_G, etc)
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		_register = self._i2c.readByte(self.address, self.ADXL313_DATA_FORMAT)
+		to_write = new_range
+		to_write |= (_register & 0b11101100)
+		self._i2c.writeByte(self.address, self.ADXL313_DATA_FORMAT, to_write)
+		return True
