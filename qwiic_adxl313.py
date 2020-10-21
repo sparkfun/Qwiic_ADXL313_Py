@@ -405,3 +405,126 @@ class QwiicAdxl313(object):
 		to_write |= (_register & 0b11101100)
 		self._i2c.writeByte(self.address, self.ADXL313_DATA_FORMAT, to_write)
 		return True
+
+	# ----------------------------------
+	# setActivityX()
+	#
+	# Enalbes or disables X axis participattion in activity detection
+	def setActivityX(self, state):
+		""" 
+			Enalbes or disables X axis participattion in activity detection
+			:param state: 1 = enabled, 0 = disabled
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		return self.setRegisterBit(self.ADXL313_ACT_INACT_CTL, 6, state)
+	
+	# ----------------------------------
+	# setActivityY()
+	#
+	# Enalbes or disables Y axis participattion in activity detection
+	def setActivityY(self, state):
+		""" 
+			Enalbes or disables Y axis participattion in activity detection
+			:param state: 1 = enabled, 0 = disabled
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		return self.setRegisterBit(self.ADXL313_ACT_INACT_CTL, 5, state)
+
+	# ----------------------------------
+	# setActivityZ()
+	#
+	# Enalbes or disables Z axis participattion in activity detection
+	def setActivityZ(self, state):
+		""" 
+			Enalbes or disables Z axis participattion in activity detection
+			:param state: 1 = enabled, 0 = disabled
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		return self.setRegisterBit(self.ADXL313_ACT_INACT_CTL, 4, state)		
+
+	# ----------------------------------
+	# setInactivityX()
+	#
+	# Enalbes or disables X axis participattion in inactivity detection
+	def setInactivityX(self, state):
+		""" 
+			Enalbes or disables X axis participattion in inactivity detection
+			:param state: 1 = enabled, 0 = disabled
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		return self.setRegisterBit(self.ADXL313_ACT_INACT_CTL, 2, state)
+	
+	# ----------------------------------
+	# setInactivityY()
+	#
+	# Enalbes or disables Y axis participattion in inactivity detection
+	def setInactivityY(self, state):
+		""" 
+			Enalbes or disables Y axis participattion in inactivity detection
+			:param state: 1 = enabled, 0 = disabled
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		return self.setRegisterBit(self.ADXL313_ACT_INACT_CTL, 1, state)
+
+	# ----------------------------------
+	# setInactivityZ()
+	#
+	# Enalbes or disables Z axis participattion in inactivity detection
+	def setInactivityZ(self, state):
+		""" 
+			Enalbes or disables Z axis participattion in inactivity detection
+			:param state: 1 = enabled, 0 = disabled
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		return self.setRegisterBit(self.ADXL313_ACT_INACT_CTL, 0, state)		
+
+	# ----------------------------------
+	# setActivityThreshold()
+	#
+	# Sets the Threshold Value for Detecting Activity.
+	# Data Format is Unsigned, so the Magnitude of the Activity Event is Compared
+	# with the Value in the THRESH_ACT Register.
+	# The Scale Factor is 62.5mg/LSB.
+	# Value of 0 may Result in Undesirable Behavior if the Activity Interrupt Enabled.
+	# It Accepts a Maximum Value of 255.
+	def setActivityThreshold(self, activityThreshold):
+		""" 
+			Sets the Threshold Value for Detecting Activity.
+			:param activityThreshold: 0-255
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		activityThreshold = limit(activityThreshold)
+		self._i2c.writeByte(self.address, self.ADXL313_THRESH_ACT, activityThreshold)
+		return True		
+
+	# ----------------------------------
+	# getActivityThreshold()
+	#
+	# Gets the Threshold Value for Detecting Activity.
+	def getActivityThreshold(self):
+		""" 
+			Gets the Threshold Value for Detecting Activity.
+
+			:return: activity detection theshold
+			:rtype: byte
+		"""
+		return self._i2c.readByte(self.address, self.ADXL313_THRESH_ACT)			
+
+	def limit(num, minimum=1, maximum=255):
+		"""Limits input 'num' between minimum and maximum values.
+		Default minimum value is 1 and maximum value is 255."""
+		return max(min(num, maximum), minimum)
