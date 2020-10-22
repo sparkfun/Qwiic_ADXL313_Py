@@ -407,6 +407,42 @@ class QwiicAdxl313(object):
 		return True
 
 	# ----------------------------------
+	# autosleepOn()
+	#
+	# Turns Autosleep on.
+	# note, prior to calling this, 
+	# you will need to set THRESH_INACT and TIME_INACT.
+	# set the link bit, to "link" activity and inactivity sensing
+	def autosleepOn(self):
+		""" 
+			Turns Autosleep on.
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		# set the link bit, to "link" activity and inactivity sensing
+		self.setRegisterBit(self.ADXL313_POWER_CTL, self.ADXL313_LINK_BIT, True)
+
+		# set the autosleep
+		self.setRegisterBit(self.ADXL313_POWER_CTL, self.ADXL313_AUTOSLEEP_BIT, True)
+		return True
+
+	# ----------------------------------
+	# autosleepOff()
+	#
+	# Turns Autosleep off
+	def autosleepOff(self):
+		""" 
+			Turns Autosleep off.
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		# clear the autosleep bit
+		self.setRegisterBit(self.ADXL313_POWER_CTL, self.ADXL313_AUTOSLEEP_BIT, False)
+		return True		
+
+	# ----------------------------------
 	# setActivityX()
 	#
 	# Enalbes or disables X axis participattion in activity detection
@@ -507,7 +543,7 @@ class QwiicAdxl313(object):
 			:return: Returns true of the function was completed, otherwise False.
 			:rtype: bool
 		"""
-		activityThreshold = limit(activityThreshold)
+		activityThreshold = self.limit(activityThreshold)
 		self._i2c.writeByte(self.address, self.ADXL313_THRESH_ACT, activityThreshold)
 		return True		
 
@@ -524,7 +560,210 @@ class QwiicAdxl313(object):
 		"""
 		return self._i2c.readByte(self.address, self.ADXL313_THRESH_ACT)			
 
-	def limit(num, minimum=1, maximum=255):
-		"""Limits input 'num' between minimum and maximum values.
-		Default minimum value is 1 and maximum value is 255."""
-		return max(min(num, maximum), minimum)
+	# ----------------------------------
+	# setInactivityThreshold()
+	#
+	# Sets the Threshold Value for Detecting Inactivity.
+	# Data Format is Unsigned, so the Magnitude of the Inactivity Event is Compared
+	# with the Value in the THRESH_ACT Register.
+	# The Scale Factor is 62.5mg/LSB.
+	# Value of 0 may Result in Undesirable Behavior if the Inactivity Interrupt Enabled.
+	# It Accepts a Maximum Value of 255.
+	def setInactivityThreshold(self, inactivityThreshold):
+		""" 
+			Sets the Threshold Value for Detecting Inactivity.
+			:param inactivityThreshold: 0-255
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		inactivityThreshold = self.limit(inactivityThreshold)
+		self._i2c.writeByte(self.address, self.ADXL313_THRESH_INACT, inactivityThreshold)
+		return True		
+
+	# ----------------------------------
+	# getInactivityThreshold()
+	#
+	# Gets the Threshold Value for Detecting Inactivity.
+	def getInactivityThreshold(self):
+		""" 
+			Gets the Threshold Value for Detecting Inactivity.
+
+			:return: inactivity detection theshold
+			:rtype: byte
+		"""
+		return self._i2c.readByte(self.address, self.ADXL313_THRESH_INACT)			
+
+	# ----------------------------------
+	# setTimeInactivity()
+	#
+	# Sets time requirement below inactivity threshold to detect inactivity
+	# Contains an Unsigned Time Value Representing the Amount of Time that
+	# Acceleration must be Less Than the Value in the THRESH_INACT Register
+	# for Inactivity to be Declared.
+	# Uses Filtered Output Data* unlike other Interrupt Functions
+	# Scale Factor is 1sec/LSB.
+	# Value Must Be Between 0 and 255.
+	def setTimeInactivity(self, timeInactivity):
+		""" 
+			Sets time requirement below inactivity threshold to detect inactivity
+			:param timeInactivity: 0-255
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		timeInactivity = self.limit(timeInactivity)
+		self._i2c.writeByte(self.address, self.ADXL313_TIME_INACT, timeInactivity)
+		return True		
+
+	# ----------------------------------
+	# getTimeInactivity()
+	#
+	# Gets time requirement below inactivity threshold to detect inactivity
+	def getTimeInactivity(self):
+		""" 
+			Gets time requirement below inactivity threshold to detect inactivity
+
+			:return: inactivity detection time requirement
+			:rtype: byte
+		"""
+		return self._i2c.readByte(self.address, self.ADXL313_TIME_INACT)			
+
+	def limit(self, num, minimum=1, maximum=255):
+		"""
+			Limits input 'num' between minimum and maximum values.
+			Default minimum value is 1 and maximum value is 255.
+
+			:param num: the number you'l like to limit
+			:param minimum: the min (default 1)
+			:param maximum: the max (default 255)
+
+			:return: your new limited number within min and max
+			:rtype: int
+		"""
+		if num > maximum:
+			return maximum
+		elif num < minimum:
+			return minimum
+		return num		
+
+	# ----------------------------------
+	# setInterrupt()
+	#
+	# Sets the enable bit (0 or 1) for one desired int inside the ADXL313_INT_ENABLE register
+	def setInterrupt(self, interruptBit, state):
+		""" 
+			Sets the enable bit (0 or 1) for one desired int inside the ADXL313_INT_ENABLE register
+			:param interrruptBit: the desired int bit you'd like to change
+			:param state: 1 = enabled, 0 = disabled
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		return self.setRegisterBit(self.ADXL313_INT_ENABLE, interruptBit, state)	
+
+	# ----------------------------------
+	# ActivityINT()
+	#
+	# Enables or disables the activity interrupt
+	def ActivityINT(self, state):
+		""" 
+			Enables or disables the activity interrupt
+			:param state: 1 = enabled, 0 = disabled
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		if state:
+			return self.setInterrupt(self.ADXL313_INT_ACTIVITY_BIT, 1)
+		else:
+			return self.setInterrupt(self.ADXL313_INT_ACTIVITY_BIT, 0)
+
+	# ----------------------------------
+	# InactivityINT()
+	#
+	# Enables or disables the inactivity interrupt
+	def InactivityINT(self, state):
+		""" 
+			Enables or disables the inactivity interrupt
+			:param state: 1 = enabled, 0 = disabled
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		if state:
+			return self.setInterrupt(self.ADXL313_INT_INACTIVITY_BIT, 1)
+		else:
+			return self.setInterrupt(self.ADXL313_INT_INACTIVITY_BIT, 0)		
+
+	# ----------------------------------
+	# DataReadyINT()
+	#
+	# Enables or disables the dataready interrupt
+	def DataReadyINT(self, state):
+		""" 
+			Enables or disables the dataready interrupt
+			:param state: 1 = enabled, 0 = disabled
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		if state:
+			return self.setInterrupt(self.ADXL313_INT_DATA_READY_BIT, 1)
+		else:
+			return self.setInterrupt(self.ADXL313_INT_DATA_READY_BIT, 0)				
+
+	# ----------------------------------
+	# WatermarkINT()
+	#
+	# Enables or disables the watermark interrupt
+	def WatermarkINT(self, state):
+		""" 
+			Enables or disables the watermark interrupt
+			:param state: 1 = enabled, 0 = disabled
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		if state:
+			return self.setInterrupt(self.ADXL313_INT_WATERMARK_BIT, 1)
+		else:
+			return self.setInterrupt(self.ADXL313_INT_WATERMARK_BIT, 0)					
+
+	# ----------------------------------
+	# OverrunINT()
+	#
+	# Enables or disables the overrun interrupt
+	def OverrunINT(self, state):
+		""" 
+			Enables or disables the overrun interrupt
+			:param state: 1 = enabled, 0 = disabled
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		if state:
+			return self.setInterrupt(self.ADXL313_INT_OVERRUN_BIT, 1)
+		else:
+			return self.setInterrupt(self.ADXL313_INT_OVERRUN_BIT, 0)								
+
+	# ----------------------------------
+	# updateIntSourceStatuses()
+	#
+	# Reads int Source Register once and updates all individual calss statuses
+	def updateIntSourceStatuses(self):
+		""" 
+			Reads int Source Register once and updates all individual calss statuses
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		_register = self._i2c.readByte(self.address, self.ADXL313_INT_SOURCE)
+		self.ADXL313_INTSOURCE_DATAREADY = ((_register >> self.ADXL313_INT_DATA_READY_BIT) & 1)
+		self.ADXL313_INTSOURCE_ACTIVITY = ((_register >> self.ADXL313_INT_ACTIVITY_BIT) & 1)
+		self.ADXL313_INTSOURCE_INACTIVITY = ((_register >> self.ADXL313_INT_INACTIVITY_BIT) & 1)
+		self.ADXL313_INTSOURCE_WATERMARK = ((_register >> self.ADXL313_INT_WATERMARK_BIT) & 1)
+		self.ADXL313_INTSOURCE_OVERRUN = ((_register >> self.ADXL313_INT_OVERRUN_BIT) & 1)
+		return True
+
+	

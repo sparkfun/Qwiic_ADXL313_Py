@@ -68,15 +68,15 @@ def runExample():
 	myAdxl.setRange(myAdxl.ADXL313_RANGE_4_G)
 
 	# setup activity sensing options
-	myAdxl.setActivityX(true)		# enable x-axis participation in detecting activity
-	myAdxl.setActivityY(false)		# disable y-axis participation in detecting activity
-	myAdxl.setActivityZ(false)		# disable z-axis participation in detecting activity
+	myAdxl.setActivityX(True)		# enable x-axis participation in detecting activity
+	myAdxl.setActivityY(False)		# disable y-axis participation in detecting activity
+	myAdxl.setActivityZ(False)		# disable z-axis participation in detecting activity
 	myAdxl.setActivityThreshold(10)	# 0-255 (62.5mg/LSB)
 
 	# setup inactivity sensing options
-	myAdxl.setInactivityX(true)			# enable x-axis participation in detecting inactivity
-	myAdxl.setInactivityY(false)		# disable y-axis participation in detecting inactivity
-	myAdxl.setInactivityZ(false)		# disable z-axis participation in detecting inactivity
+	myAdxl.setInactivityX(True)			# enable x-axis participation in detecting inactivity
+	myAdxl.setInactivityY(False)		# disable y-axis participation in detecting inactivity
+	myAdxl.setInactivityZ(False)		# disable z-axis participation in detecting inactivity
 	myAdxl.setInactivityThreshold(10)	# 0-255 (62.5mg/LSB)
 	myAdxl.setTimeInactivity(5)			# 0-255 (1sec/LSB)
 
