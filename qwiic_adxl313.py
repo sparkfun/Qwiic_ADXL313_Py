@@ -766,4 +766,34 @@ class QwiicAdxl313(object):
 		self.ADXL313_INTSOURCE_OVERRUN = ((_register >> self.ADXL313_INT_OVERRUN_BIT) & 1)
 		return True
 
-	
+	# ----------------------------------
+	# Lower Power definitions
+	# 
+	def isLowPower(self):
+		return getRegisterBit(ADXL313_BW_RATE, 4)
+
+	def lowPowerOn(self):
+		return self.setRegisterBit(self.ADXL313_BW_RATE, 4, True)
+
+	def lowPowerOff(self):
+		return self.setRegisterBit(self.ADXL313_BW_RATE, 4, False)
+
+	def setLowPower(self, state):
+		if(state):
+			self.lowPowerOn()
+		else:
+			self.lowPowerOff()
+
+	lowPower = property(isLowPower, setLowPower)
+
+	# ----------------------------------
+	# Bandwidth definitions
+	# 
+	def setBandwidth(self, bw):
+		self._i2c.writeByte(self.address, ADXL313_BW_RATE, bw)
+
+	def getBandwidth(self){
+		return self._i2c.readByte(self.address, ADXL313_BW_RATE)
+	}
+
+	bandwidth = property(getBandwidth, setBandwidth)
