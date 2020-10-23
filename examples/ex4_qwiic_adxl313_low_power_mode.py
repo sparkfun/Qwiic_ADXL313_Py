@@ -69,9 +69,9 @@ def runExample():
 	#also try:
 	#myAdxl.lowPower = True
 
-	myAdxl.setBandwidth(ADXL313_BW_12_5)
+	myAdxl.setBandwidth(myAdxl.ADXL313_BW_12_5)
 	#also try:
-	#myAdxl.bandwidth = ADXL313_BW_12_5
+	#myAdxl.bandwidth = myAdxl.ADXL313_BW_12_5
 	
 	#12.5Hz is the best power savings.
 	#Other options possible are the following.

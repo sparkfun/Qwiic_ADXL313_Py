@@ -770,7 +770,7 @@ class QwiicAdxl313(object):
 	# Lower Power definitions
 	# 
 	def isLowPower(self):
-		return getRegisterBit(ADXL313_BW_RATE, 4)
+		return getRegisterBit(self.ADXL313_BW_RATE, 4)
 
 	def lowPowerOn(self):
 		return self.setRegisterBit(self.ADXL313_BW_RATE, 4, True)
@@ -790,10 +790,9 @@ class QwiicAdxl313(object):
 	# Bandwidth definitions
 	# 
 	def setBandwidth(self, bw):
-		self._i2c.writeByte(self.address, ADXL313_BW_RATE, bw)
+		self._i2c.writeByte(self.address, self.ADXL313_BW_RATE, bw)
 
-	def getBandwidth(self){
-		return self._i2c.readByte(self.address, ADXL313_BW_RATE)
-	}
+	def getBandwidth(self):
+		return self._i2c.readByte(self.address, self.ADXL313_BW_RATE)
 
 	bandwidth = property(getBandwidth, setBandwidth)
