@@ -648,6 +648,36 @@ class QwiicAdxl313(object):
 		return num		
 
 	# ----------------------------------
+	# setInterruptMapping()
+	#
+	# Maps the desired interrupt bit (from intsource) to the desired hardware interrupt pin
+	def setInterruptMapping(self, interruptBit, interruptPin):
+		""" 
+			Maps the desired interrupt bit (from intsource) to the desired hardware interrupt pin
+			:param interrruptBit: the desired int bit you'd like to map
+			:param interruptPin: ADXL313_INT1_PIN or ADXL313_INT2_PIN
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		return self.setRegisterBit(self.ADXL313_INT_MAP, interruptBit, interruptPin)	
+
+
+	# ----------------------------------
+	# isInterruptEnabled()
+	#
+	# Get status of whether an interrupt is enabled or disabled.
+	def isInterruptEnabled(self, interruptBit):
+		""" 
+			Get status of whether an interrupt is enabled or disabled.
+			:param interrruptBit: the desired int bit you'd like to read
+
+			:return: Returns true if the interrupt bit is enabled, otherwise false
+			:rtype: bool
+		"""
+		return self.getRegisterBit(self.ADXL313_INT_ENABLE, interruptBit)			
+
+	# ----------------------------------
 	# setInterrupt()
 	#
 	# Sets the enable bit (0 or 1) for one desired int inside the ADXL313_INT_ENABLE register
