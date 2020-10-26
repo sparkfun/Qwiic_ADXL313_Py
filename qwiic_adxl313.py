@@ -777,6 +777,107 @@ class QwiicAdxl313(object):
 		else:
 			return self.setInterrupt(self.ADXL313_INT_OVERRUN_BIT, 0)								
 
+
+	# ----------------------------------
+	# getFifoMode()
+	#
+	# Get the current FIFO mode (0=bypass,1=fifo,2=stream,3=trigger)
+	def getFifoMode(self):
+		""" 
+			Get the current FIFO mode (0=bypass,1=fifo,2=stream,3=trigger)
+
+			:return: FIFO mode (0=bypass,1=fifo,2=stream,3=trigger)
+			:rtype: byte
+		"""
+		_register = self._i2c.readByte(self.address, self.ADXL313_FIFO_CTL)
+		mode = (_register & 0b11000000) # mask all the other bits [0:5]
+		mode = (mode >> 6)
+		return mode
+
+	# ----------------------------------
+	# setFifoMode(self, mode)
+	#
+	# Set FIFO mode (0=bypass,1=fifo,2=stream,3=trigger)
+	def setFifoMode(self, mode):
+		""" 
+			Set FIFO mode
+
+			:param mode: FIFO mode (ADXL313_FIFO_MODE_BYPASS, ADXL313_FIFO_MODE_FIFO, ADXL313_FIFO_MODE_STREAM, ADXL313_FIFO_MODE_TRIGGER)
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		_register = self._i2c.readByte(self.address, self.ADXL313_FIFO_CTL) # read entire FIFO_CTRL reg
+		_register &= 0b00111111 # clear current mode bits
+		_register |= (mode << 6) # set the desired mode bits into our "write regiter variable"
+		self._i2c.writeByte(self.address, self.ADXL313_FIFO_CTL, _register) # write it!
+		return True
+
+	# ----------------------------------
+	# getFifoSamplesThreshhold()
+	#
+	# Get FIFO samples threshold (0-32)
+	def getFifoSamplesThreshhold(self):
+		""" 
+			Get FIFO samples threshold (0-32)
+
+			:return: FIFO samples threshold (0-32)
+			:rtype: byte
+		"""
+		_register = self._i2c.readByte(self.address, self.ADXL313_FIFO_CTL)
+		samples = (_register & 0b00011111) # mask all the other bits we don't need [5:7]
+		return samples
+
+	# ----------------------------------
+	# setFifoSamplesThreshhold()
+	#
+	# Set FIFO samples threshold (0-32)
+	def setFifoSamplesThreshhold(self, samples):
+		""" 
+			Set FIFO samples threshold (0-32)
+
+			:param mode: FIFO samples threshold (0-32)
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		_register = self._i2c.readByte(self.address, self.ADXL313_FIFO_CTL) # read entire FIFO_CTRL reg
+		_register &= 0b11100000 # clear current sample threshhold bits [0:4]
+		_register |= samples # set the desired sample threshhold bits into our "write regiter variable"
+		self._i2c.writeByte(self.address, self.ADXL313_FIFO_CTL, _register) # write it!
+		return True
+
+	# ----------------------------------
+	# getFifoEntriesAmount()
+	#
+	# Get FIFO entries amount (0-32)
+	def getFifoEntriesAmount(self):
+		""" 
+			Get FIFO entries amount (0-32)
+
+			:return: FIFO entries amount (0-32)
+			:rtype: byte
+		"""
+		_register = self._i2c.readByte(self.address, self.ADXL313_FIFO_STATUS) 
+		entries = (_register & 0b00111111) # mask all the other bits we don't need [6:7]
+		return entries
+
+	# ----------------------------------
+	# clearFifo()
+	#
+	# Clears all FIFO data by bypassing FIFO and re-entering previous mode
+	def clearFifo(self):
+		""" 
+			Clears all FIFO data by bypassing FIFO and re-entering previous mode
+
+			:return: Returns true of the function was completed, otherwise False.
+			:rtype: bool
+		"""
+		mode = self.getFifoMode() # get current mode, so we can return it here later
+		self.setFifoMode(self.ADXL313_FIFO_MODE_BYPASS) # sets mode to bypass temporarily to clear contents
+		self.setFifoMode(mode) # return mode to previous selection
+		return True
+
 	# ----------------------------------
 	# updateIntSourceStatuses()
 	#
