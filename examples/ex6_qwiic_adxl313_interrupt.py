@@ -67,7 +67,7 @@ import sys
 
 def runExample():
 
-	print("\nSparkFun Adxl313  Example 3 - Setup Autosleep and then only print values when it's awake.\n")
+	print("\nSparkFun Adxl313  Example 6 - Setup Autosleep and interrupts, then only print values when it's awake.\n")
 	myAdxl = qwiic_adxl313.QwiicAdxl313()
 
 	if myAdxl.connected == False:
