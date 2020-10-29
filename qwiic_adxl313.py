@@ -65,7 +65,7 @@ _DEFAULT_NAME = "Qwiic ADXL313"
 # Some devices have multiple availabele addresses - this is a list of these addresses.
 # NOTE: The first address in this list is considered the default I2C address for the 
 # device.
-_AVAILABLE_I2C_ADDRESS = [0x53, 0x1D]
+_AVAILABLE_I2C_ADDRESS = [0x1D, 0x53]
 
 # define our valid chip IDs
 _validChipIDs = [0xCB]
