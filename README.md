@@ -20,7 +20,7 @@ Qwiic_ADXL313_Py
 	
 </p>
 
-<img src="https://cdn.sparkfun.com//assets/parts/1/3/4/3/3/15083-SparkFun_Qwiic_Twist_-_RGB_Rotary_Encoder_Breakout-01.jpg"  align="right" width=300 alt="SparkFun 3-Axis Digital Accelerometer Breakout - ADXL313 (Qwiic)">
+<img src=""  align="right" width=300 alt="SparkFun 3-Axis Digital Accelerometer Breakout - ADXL313 (Qwiic)">
 
 Python module for the [SparkFun 3-Axis Digital Accelerometer Breakout - ADXL313 (Qwiic)](https://www.sparkfun.com/products/17241)
 
