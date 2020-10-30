@@ -1,4 +1,4 @@
-Qwiic SparkFun 3-Axis Digital Accelerometer Breakout - ADXL313
+Qwiic ADXL313
 ==========================
 
-This package provides support to use the SparkFun 3-Axis Digital Accelerometer Breakout - ADXL313 (Qwiic)
+This package provides support to use the SparkFun Qwiic ADXL313.
