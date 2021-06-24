@@ -699,6 +699,7 @@ class QwiicAdxl313(object):
 	def ActivityINT(self, state):
 		""" 
 			Enables or disables the activity interrupt
+			
 			:param state: 1 = enabled, 0 = disabled
 
 			:return: Returns true of the function was completed, otherwise False.
